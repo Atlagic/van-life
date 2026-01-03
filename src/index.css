@@ -151,6 +151,7 @@ footer {
   padding-inline: 32px;
   padding-bottom: 32px;
   margin-inline: 27px;
+  margin-bottom: 27px;
   border-radius: 5px;
 }
 
@@ -177,6 +178,7 @@ footer {
   justify-items: center;
   gap: 34px;
   margin-top: 57px;
+  margin-bottom: 37px;
 }
 
 @media screen and (max-width: 450px) {
@@ -314,6 +316,7 @@ i[class*='van-type-'] {
   display: flex;
 }
 
+
 .host-nav a {
   text-decoration: none;
   color: #4D4D4D;
@@ -321,8 +324,20 @@ i[class*='van-type-'] {
   padding: 5px 20px;
 }
 
+.host-nav a.active-link {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #161616;
+}
+
 .host-nav a:hover {
   color: #161616;
   text-decoration: underline;
   font-weight: 600;
+}
+
+.active-link {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #161616;
 }
