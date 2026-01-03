@@ -26,9 +26,11 @@ export default function Vans() {
     return (
         <div className="van-list-container">
             <h1>Explore our van options</h1>
-            <div className="van-list">
-                {vanElements}
-            </div>
+            { vanElements ? (
+                <div className="van-list">
+                    { vanElements }
+                </div>
+            ) : <h2>Loading...</h2> }
         </div>
     )
 }
