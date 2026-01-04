@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {Link, NavLink, Outlet, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 
 export default function HostVanDetail() {
@@ -12,15 +12,32 @@ export default function HostVanDetail() {
     }, [id]);
 
     return (
-        <div className="host-van-detail-container">
+        <section>
+            {/*relative="path" means we go one level up based on path not route hierarchy so we can use .. instead of ../vans */}
+            <Link to=".." relative="path" className="back-button">
+                &larr; <span>Back to all vans</span>
+            </Link>
+
             { hostVanDetail ? (
-                <div className="host-van-detail">
-                    <img src={hostVanDetail.imageUrl} />
-                    <i className={`van-type ${hostVanDetail.type} selected`}>{hostVanDetail.type}</i>
-                    <h2>{hostVanDetail.name}</h2>
-                    <p className="van-price"><span>${hostVanDetail.price}</span>/day</p>
-                </div>
-            ) : <h2>Loading...</h2> }
-        </div>
+                <div className="host-van-detail-layout-container">
+                    <div className="host-van-detail">
+                        <img src={hostVanDetail.imageUrl} />
+                        <div className="host-van-detail-info-text">
+                            <i
+                                className={`van-type van-type-${hostVanDetail.type}`}
+                            >
+                                {hostVanDetail.type}
+                            </i>
+                            <h3>{hostVanDetail.name}</h3>
+                        </div>
+                    </div>
+                    <nav className="host-van-detail-nav">
+                        <NavLink className={({isActive}) => isActive ? 'active-link' : null } to="." end >Details</NavLink>
+                        <NavLink className={({isActive}) => isActive ? 'active-link' : null } to="pricing" >Pricing</NavLink>
+                        <NavLink className={({isActive}) => isActive ? 'active-link' : null } to="photos" >Photos</NavLink>
+                    </nav>
+                    <Outlet context={{hostVanDetail}}/>
+            </div> ) : <h2>Loading...</h2> }
+        </section>
     )
 }
