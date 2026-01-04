@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 export default function Vans() {
     const [vansData, setVansData ] = useState([])
+    const [searchParams, setSearchParams] = useSearchParams()
+    const typeFilter = searchParams.get('type');
 
     useEffect(() => {
         fetch("/api/vans/")
@@ -10,9 +12,12 @@ export default function Vans() {
             .then( data => setVansData(data.vans))
     }, []);
 
-    const vanElements = vansData.map(van => (
+    const displayedVanElements = typeFilter ? vansData.filter(van => van.type === typeFilter ) : vansData;
+
+    const vanElements = displayedVanElements.map(van => (
         <div key={van.id} className="van-tile">
-            <Link to={`/vans/${van.id}`}>
+            {/* save the *history state of filters ( search params ) so filters are still there when going back to this page */}
+            <Link to={`/vans/${van.id}`} state={{ search: `?${searchParams.toString()}`, type: typeFilter }}>
                 <img src={van.imageUrl} />
                 <div className="van-info">
                     <h3>{van.name}</h3>
@@ -23,9 +28,40 @@ export default function Vans() {
         </div>
     ))
 
+    // function generateNewSearchParamStr(key, value) {
+    //     const sp = new URLSearchParams(searchParams);
+    //
+    //     if (value === null) {
+    //         sp.delete('type')
+    //     } else {
+    //         sp.append(key, value);
+    //     }
+    //
+    //     return `?${sp.toString()}`;
+    // }
+
+    function handleFilterChange(key, value) {
+        setSearchParams(prevParams => {
+            value === null ? prevParams.delete(key) : prevParams.set(key, value )
+
+            return prevParams
+        })
+    }
+
     return (
         <div className="van-list-container">
             <h1>Explore our van options</h1>
+            <div className="van-list-filter-buttons">
+                {/*<Link className="van-type simple" to="?type=simple">Simple</Link>*/}
+                {/*<Link className="van-type luxury" to="?type=luxury">Luxury</Link>*/}
+                {/*<Link className="van-type rugged" to="?type=rugged">Rugged</Link>*/}
+                {/*{ typeFilter && <Link className="van-type clear-filters" to=".">Clear filter</Link> }*/}
+
+                <button className={`van-type simple ${typeFilter === 'simple' ? 'selected' : null }`} onClick={() => handleFilterChange('type', 'simple')}>Simple</button>
+                <button className={`van-type luxury ${typeFilter === 'luxury' ? 'selected' : null }`}  onClick={() => handleFilterChange('type', 'luxury')}>Luxury</button>
+                <button className={`van-type rugged ${typeFilter === 'rugged' ? 'selected' : null }`} onClick={() => handleFilterChange('type', 'rugged')}>Rugged</button>
+                { typeFilter && <button className="van-type clear-filters" onClick={() => handleFilterChange('type', null) }>Clear filter</button> }
+            </div>
             { vanElements ? (
                 <div className="van-list">
                     { vanElements }
@@ -34,3 +70,6 @@ export default function Vans() {
         </div>
     )
 }
+
+//TODO add pagination
+//TODO saerch params where you can select multiple filters, like van that is either luxury or simple ( there's answer in gpt )

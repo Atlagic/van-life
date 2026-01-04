@@ -12,7 +12,7 @@ export default function HostVanDetail() {
     }, [id]);
 
     return (
-        <section>
+        <section style={{margin: 30 + 'px'}}>
             {/*relative="path" means we go one level up based on path not route hierarchy so we can use .. instead of ../vans */}
             <Link to=".." relative="path" className="back-button">
                 &larr; <span>Back to all vans</span>

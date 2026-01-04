@@ -1,5 +1,5 @@
 export default function Reviews() {
     return (
-        <h1>Reviews</h1>
+        <h1 style={{paddingInline: 26 + 'px'}}>Reviews</h1>
     )
 }

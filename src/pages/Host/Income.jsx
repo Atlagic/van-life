@@ -1,5 +1,5 @@
 export default function Income() {
     return (
-        <h1>Income</h1>
+        <h1 style={{paddingInline: 26 + 'px'}}>Income</h1>
     )
 }
