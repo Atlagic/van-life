@@ -13,11 +13,9 @@ import HostVanDetail from "./pages/Host/HostVanDetail.jsx";
 import HostVanInfo from "./pages/Host/HostVanInfo.jsx";
 import HostVanPricing from "./pages/Host/HostVanPricing.jsx";
 import HostVanPhotos from "./pages/Host/HostVanPhotos.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 import "../server.js";
-
-
-
 
 
 function App() {
@@ -43,6 +41,7 @@ function App() {
                       <Route path="income" element={<Income />} />
                       <Route path="reviews" element={<Reviews />} />
                   </Route>
+                  <Route path="*" element={<NotFound/>} />
               </Route>
           </Routes>
       </BrowserRouter>
@@ -50,5 +49,3 @@ function App() {
 }
 
 export default App
-
-//TODO 404 page handle
