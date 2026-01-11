@@ -1,15 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { getVans } from "../../../api.js"
 
 export default function Vans() {
     const [vansData, setVansData ] = useState([])
     const [searchParams, setSearchParams] = useSearchParams()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
     const typeFilter = searchParams.get('type');
 
     useEffect(() => {
-        fetch("/api/vans/")
-            .then( res => res.json() )
-            .then( data => setVansData(data.vans))
+        async function loadVans() {
+            setLoading(true);
+            try {
+                const data = await getVans();
+                setVansData(data);
+            } catch(err) {
+                setError(err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadVans();
     }, []);
 
     const displayedVanElements = typeFilter ? vansData.filter(van => van.type === typeFilter ) : vansData;
@@ -48,6 +61,10 @@ export default function Vans() {
         })
     }
 
+    if (loading) return <h1 aria-live="polite" style={{padding: 20 + 'px'}}>Loading...</h1>
+
+    if (error) return <h1 aria-live="assertive" style={{padding: 20 + 'px'}}>There was an error: { error.message }</h1>
+
     return (
         <div className="van-list-container">
             <h1>Explore our van options</h1>
@@ -62,11 +79,9 @@ export default function Vans() {
                 <button className={`van-type rugged ${typeFilter === 'rugged' ? 'selected' : null }`} onClick={() => handleFilterChange('type', 'rugged')}>Rugged</button>
                 { typeFilter && <button className="van-type clear-filters" onClick={() => handleFilterChange('type', null) }>Clear filter</button> }
             </div>
-            { vanElements ? (
-                <div className="van-list">
-                    { vanElements }
-                </div>
-            ) : <h2>Loading...</h2> }
+            <div className="van-list">
+                { vanElements }
+            </div>
         </div>
     )
 }
