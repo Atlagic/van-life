@@ -62,8 +62,7 @@ export default function Vans() {
     }
 
     if (loading) return <h1 aria-live="polite" style={{padding: 20 + 'px'}}>Loading...</h1>
-
-    if (error) return <h1 aria-live="assertive" style={{padding: 20 + 'px'}}>There was an error: { error.message }</h1>
+    if (error)   return <h1 aria-live="assertive" style={{padding: 20 + 'px'}}>There was an error: { error.message }</h1>
 
     return (
         <div className="van-list-container">
