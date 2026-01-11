@@ -87,3 +87,5 @@ export default function Vans() {
 
 //TODO add pagination
 //TODO saerch params where you can select multiple filters, like van that is either luxury or simple ( there's answer in gpt )
+//TODO loading spinner instead of loading text
+//TODO throw different error message if there's no van with id like /vans/12313212, same for the host/vans/123123
