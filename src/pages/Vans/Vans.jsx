@@ -1,35 +1,18 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLoaderData } from "react-router-dom";
 import { getVans } from "../../../api.js"
 
+export function loader() {
+    return getVans();
+}
 export default function Vans() {
-    const [vansData, setVansData ] = useState([])
     const [searchParams, setSearchParams] = useSearchParams()
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const VANS_PER_PAGE = 4;
     const typeFilter = searchParams.get('type');
 
-    useEffect(() => {
-        async function loadVans() {
-            setLoading(true);
-            try {
-                const data = await getVans();
-                setVansData(data);
-            } catch(err) {
-                setError(err)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        loadVans();
-    }, []);
-
-    useEffect(() => {
-        setCurrentPage(1)
-    }, [typeFilter]);
+    // using loader instead of useEffect and setState
+    const vansData = useLoaderData()
 
     const displayedVanElements = typeFilter ? vansData.filter(van => van.type === typeFilter ) : vansData;
 
@@ -70,15 +53,13 @@ export default function Vans() {
 
             return prevParams
         })
+        setCurrentPage(1)
     }
 
     function handlePageChange(page) {
         setCurrentPage(page)
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    if (loading) return <h1 aria-live="polite" style={{padding: 20 + 'px'}}>Loading...</h1>
-    if (error)   return <h1 aria-live="assertive" style={{padding: 20 + 'px'}}>There was an error: { error.message }</h1>
 
     return (
         <div className="van-list-container">
@@ -146,6 +127,5 @@ export default function Vans() {
 }
 
 //TODO saerch params where you can select multiple filters, like van that is either luxury or simple ( there's answer in gpt )
-//TODO loading spinner instead of loading text
-//TODO throw different error message if there's no van with id like /vans/12313212, same for the host/vans/123123
+//TODO loading spinner instead of loading text ( do it on hostVans because here we don't have loading anymore )
 //TODO convert css to scss

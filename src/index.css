@@ -33,6 +33,9 @@ header {
   display: flex;
   align-items: center;
   padding-block: 10px;
+  background-color: #fff;
+  margin-bottom: 2em;
+  padding: 0 10px;
 }
 
 header .site-logo {

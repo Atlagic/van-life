@@ -9,7 +9,8 @@ import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import AuthRequired from "./components/AuthRequired.jsx";
-import Vans from "./pages/Vans/Vans.jsx";
+import Vans, {loader as vansLoader } from "./pages/Vans/Vans.jsx";
+import Error from "./components/Error.jsx";
 import VanDetail from "./pages/Vans/VanDetail.jsx";
 import Layout from "./components/Layout.jsx";
 import Reviews from "./pages/Host/Reviews.jsx";
@@ -29,8 +30,8 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<Layout />}>
         <Route index element={<Home/>} />
         <Route path="about" element={<About/>} />
-        <Route path="vans" element={<Vans />} />
-        <Route path="vans/:id" element={<VanDetail />} />
+        <Route path="vans" element={<Vans />} loader={vansLoader} errorElement={<Error/>} />
+        <Route path="vans/:id" element={<VanDetail />}/>
         <Route path="login" element={<Login />} />
 
         <Route element={<AuthRequired />} >
