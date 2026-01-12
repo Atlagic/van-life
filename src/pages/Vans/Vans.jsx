@@ -7,6 +7,8 @@ export default function Vans() {
     const [searchParams, setSearchParams] = useSearchParams()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const VANS_PER_PAGE = 4;
     const typeFilter = searchParams.get('type');
 
     useEffect(() => {
@@ -25,9 +27,18 @@ export default function Vans() {
         loadVans();
     }, []);
 
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [typeFilter]);
+
     const displayedVanElements = typeFilter ? vansData.filter(van => van.type === typeFilter ) : vansData;
 
-    const vanElements = displayedVanElements.map(van => (
+    const totalPages = Math.ceil(displayedVanElements.length / VANS_PER_PAGE )
+    const startIndex = (currentPage - 1) * VANS_PER_PAGE
+    const endIndex = startIndex + VANS_PER_PAGE
+    const paginatedVans = displayedVanElements.slice(startIndex, endIndex)
+
+    const vanElements = paginatedVans.map(van => (
         <div key={van.id} className="van-tile">
             {/* save the *history state of filters ( search params ) so filters are still there when going back to this page */}
             <Link to={`/vans/${van.id}`} state={{ search: `?${searchParams.toString()}`, type: typeFilter }}>
@@ -61,6 +72,11 @@ export default function Vans() {
         })
     }
 
+    function handlePageChange(page) {
+        setCurrentPage(page)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     if (loading) return <h1 aria-live="polite" style={{padding: 20 + 'px'}}>Loading...</h1>
     if (error)   return <h1 aria-live="assertive" style={{padding: 20 + 'px'}}>There was an error: { error.message }</h1>
 
@@ -81,11 +97,55 @@ export default function Vans() {
             <div className="van-list">
                 { vanElements }
             </div>
+
+            { totalPages > 1 && (
+                <div className="pagination">
+                    <button
+                        className="prev"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        style={{
+                            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                            opacity: currentPage === 1 ? 0.5 : 1
+                        }}
+                    >
+                        &lt;
+                    </button>
+
+                    {[...Array(totalPages)].map((_, index) => (
+                        <button
+                            className="nums"
+                            key={index + 1}
+                            onClick={() => handlePageChange(index + 1)}
+                            style={{
+                                padding: '8px 12px',
+                                fontWeight: currentPage === index + 1 ? 'bold' : 'normal',
+                                backgroundColor: currentPage === index + 1 ? '#FF8C38' : '#ffffff',
+                                color: currentPage === index + 1 ? 'white' : 'inherit',
+                            }}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        className="next"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        style={{
+                            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                            opacity: currentPage === totalPages ? 0.5 : 1
+                        }}
+                    >
+                        &gt;
+                    </button>
+                </div>
+            )}
         </div>
     )
 }
 
-//TODO add pagination
 //TODO saerch params where you can select multiple filters, like van that is either luxury or simple ( there's answer in gpt )
 //TODO loading spinner instead of loading text
 //TODO throw different error message if there's no van with id like /vans/12313212, same for the host/vans/123123
+//TODO convert css to scss

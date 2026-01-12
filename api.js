@@ -28,6 +28,10 @@ export async function getVans() {
 export async function getVan(id) {
     const docRef = doc(db, 'vans', id)
     const snapshot = await getDoc(docRef)
+    if (!snapshot.exists()) {
+        throw new Error("Van not found")
+    }
+
     const van = { ...snapshot.data(), id: snapshot.id };
 
     return van

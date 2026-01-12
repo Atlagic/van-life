@@ -784,3 +784,33 @@ img.graph {
   color: #ff8c38;
   margin-right: 5px;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.pagination button {
+  padding: 8px 16px;
+}
+
+.pagination button.nums {
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.pagination button.prev,
+.pagination button.next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #000;
+  background-color: #fff;
+}
