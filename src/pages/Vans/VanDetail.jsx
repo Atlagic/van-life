@@ -1,25 +1,24 @@
-import { Link, useLocation, useLoaderData } from "react-router-dom";
+import {Link, useLocation, useLoaderData, Await} from "react-router-dom";
 import { getVan } from "../../../api.js";
+import {Suspense} from "react";
+import Spinner from "../../components/Spinner.jsx";
 
 export function loader({params}) {
-    return getVan(params.id);
+    return {
+        van: getVan(params.id)
+    }
 }
 
 export default function VanDetail() {
     const location = useLocation()
     // using loader instead of useEffect and setState
-    const van = useLoaderData();
+    const vanPromise = useLoaderData();
 
     const search = location.state?.search || '';
     const type = location.state?.type || 'all'
 
-    return (
-        <div className="van-detail-container">
-            {/* chaining location state of filters ( search params ) to return link */}
-            <Link to={`..${search}`} relative="path" className='back-button'>
-                &larr; <span>Back to {type} vans</span>
-            </Link>
-
+    function renderVan(van) {
+        return (
             <div className="van-detail">
                 <img src={van.imageUrl} />
                 <i className={`van-type ${van.type} selected`}>{van.type}</i>
@@ -28,6 +27,21 @@ export default function VanDetail() {
                 <p>{van.description}</p>
                 <button className="link-button">Rent this van</button>
             </div>
+        )
+    }
+
+    return (
+        <div className="van-detail-container">
+            {/* chaining location state of filters ( search params ) to return link */}
+            <Link to={`..${search}`} relative="path" className='back-button'>
+                &larr; <span>Back to {type} vans</span>
+            </Link>
+
+            <Suspense fallback={<Spinner/>}>
+                <Await resolve={vanPromise.van}>
+                    { renderVan }
+                </Await>
+            </Suspense>
         </div>
     )
 }
