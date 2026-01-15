@@ -1,81 +1,70 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom"
+import { Form, redirect, useLoaderData, useActionData, useNavigation } from "react-router-dom"
 import { loginUser } from "../../api"
+import { sleep } from "../../utils.js"
+
+export async function loader({ request }) {
+    const params = new URL(request.url).searchParams
+    return params.get('message')
+}
+
+export async function action({ request }) {
+    await sleep(1000);
+
+    const loginFormData = await request.formData()
+    const email = loginFormData.get("email")
+    const password = loginFormData.get("password")
+    const pathname = new URL(request.url)
+        .searchParams.get("redirectTo") || "/host"
+
+    try {
+        const userData = await loginUser({ email, password })
+        localStorage.setItem("loggedin", true)
+        const response = redirect(pathname);
+        response.body = true
+        return response;
+
+    } catch(err) {
+        return err.message
+    }
+    //how to do this with then
+}
 
 export default function Login() {
-    const [loginFormData, setLoginFormData] = useState({ email: "", password: "" })
-    const [status, setStatus] = useState('idle');
-    const [error, setError] = useState(null);
-    const location = useLocation();
-    const navigate = useNavigate();
-    const fromPath = location.state?.fromPath || '/host' // fromPath is either location.pathname from AuthRequired or '/host'
-
-    function handleSubmit(e) {
-        e.preventDefault()
-        setStatus('submitting');
-        setError(null);
-
-        const userData = loginUser(loginFormData)
-        userData
-            .then(data => {
-                console.log(data);
-                localStorage.setItem('loggedin', true)
-                setError(null);
-                navigate(fromPath, {replace: true})
-                // replace: after successfully logging in, when hitting back button, preventing from going back to login
-                // fromPath: purpose is to navigate us back to the page where we wanted to navigate before being forced to log in
-            })
-            .catch(err => setError(err.message))
-            .finally(() => {
-                setStatus('idle')
-            })
-
-        //or with async func
-        // async function userData() {
-        //     try {
-        //         const data = await loginUser(loginFormData)
-        //         console.log(data);
-        //     } catch (err) {
-        //         console.log(err)
-        //     }
-        // }
-        // userData();
-
-    }
-
-    function handleChange(e) {
-        const { name, value } = e.target
-        setLoginFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
+    const errorMessage = useActionData()
+    const message = useLoaderData()
+    const navigation = useNavigation()
 
     return (
         <div className="login-container">
-            { location.state?.message && <h3 className="login-first"> { location.state?.message }</h3> }
             <h1>Sign in to your account</h1>
-            { error && <h3 className="login-first">{error}</h3> }
-            <form onSubmit={handleSubmit} className="login-form">
+            {message && <h3 className="login-first">{message}</h3>}
+            {errorMessage && <h3 className="red">{errorMessage}</h3>}
+
+            <Form
+                method="post"
+                className="login-form"
+                replace
+            >
                 <input
                     name="email"
-                    onChange={handleChange}
                     type="email"
                     placeholder="Email address"
-                    value={loginFormData.email}
                 />
                 <input
                     name="password"
-                    onChange={handleChange}
                     type="password"
                     placeholder="Password"
-                    value={loginFormData.password}
                 />
-                <button disabled={status === 'submitting'}>
-                    { status === 'submitting' ? 'Logging in...' : 'Log in' }
+                <button
+                    disabled={navigation.state === "submitting"}
+                >
+                    {navigation.state === "submitting"
+                        ? "Logging in..."
+                        : "Log in"
+                    }
                 </button>
-            </form>
+            </Form>
         </div>
     )
-
 }
+//TODO add real authentication

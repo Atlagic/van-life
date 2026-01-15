@@ -570,7 +570,7 @@ a.active-link {
   font-family: "Inter", sans-serif;
 }
 
-.login-first {
+.login-first, .red {
   color: red;
 }
 

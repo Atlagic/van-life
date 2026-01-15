@@ -1,28 +1,16 @@
-import React, {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
-import {getHostVans} from "../../../api.js";
+import { Link, useLoaderData } from "react-router-dom";
+import { getHostVans } from "../../../api.js";
+import { requireAuth } from "../../../utils.js";
+
+export async function loader({ request }) {
+    const auth = await requireAuth(request);
+    if (auth) return auth;
+
+    return getHostVans();
+}
 
 export default function HostVans() {
-    const [ hostVans, setHostVans ] = useState([])
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null)
-
-    useEffect(() => {
-        async function loadHostVan() {
-            setLoading(true)
-            try {
-                const data = await getHostVans()
-                setHostVans(data)
-            } catch (err) {
-                setError(err)
-            } finally {
-                setLoading(false)
-                setError(null)
-            }
-        }
-
-        loadHostVan()
-    }, []);
+    const hostVans = useLoaderData()
 
     const hostVansElements = hostVans.map(van => (
         <Link
@@ -40,23 +28,14 @@ export default function HostVans() {
         </Link>
     ))
 
-    if (loading) return <h1 aria-live="polite" style={{padding: 20 + 'px'}}>Loading...</h1>
-    if (error)   return <h1 aria-live="assertive" style={{padding: 20 + 'px'}}>There was an error: {error.message}</h1>
 
     return (
         <section>
             <h1 className="host-vans-title">Your listed vans</h1>
             <div className="host-vans-list">
-                {
-                    hostVans.length > 0 ? (
-                        <section>
-                            {hostVansElements}
-                        </section>
-
-                    ) : (
-                        <h2>Loading...</h2>
-                    )
-                }
+                <section>
+                    { hostVansElements }
+                </section>
             </div>
         </section>
     )

@@ -7,6 +7,7 @@ export default function Dashboard() {
         localStorage.removeItem('loggedin')
         navigate('/login')
     }
+
     return (
         <>
             <section className="host-dashboard-earnings">
