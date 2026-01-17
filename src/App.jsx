@@ -56,5 +56,3 @@ function App() {
 }
 
 export default App
-
-//TODO investigate how to use middleware instead of writing every single loader
