@@ -138,4 +138,3 @@ export default function Vans() {
 }
 
 //TODO saerch params where you can select multiple filters, like van that is either luxury or simple ( there's answer in gpt )
-//TODO convert css to scss
